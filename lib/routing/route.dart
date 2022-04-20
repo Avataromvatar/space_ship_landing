@@ -8,12 +8,17 @@ class AppRouter {
       case '/':
         return CupertinoPageRoute(
             settings: const RouteSettings(name: '/'),
-            builder: (_) =>  StartPage());
+            builder: (_) => StartPage());
+      case '/start':
+        return CupertinoPageRoute(
+            settings: const RouteSettings(name: '/start'),
+            builder: (_) => StartPage());
 
       default:
         return _errorRoute(settings);
     }
   }
+
   static Route _errorRoute(RouteSettings settings) {
     return MaterialPageRoute(
       fullscreenDialog: true,

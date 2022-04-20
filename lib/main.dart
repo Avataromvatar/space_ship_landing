@@ -7,7 +7,7 @@ import 'package:space_ship_landing/routing/route.dart';
 import 'package:space_ship_landing/routing/route_path.dart';
 
 void main() async {
-  final game = BasicParallaxExample();
+  // final game = BasicParallaxExample();
   //FlameGame();
   // await game.add(BasicParallaxExample());
   // runApp(

@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:space_ship_landing/core/scene_node/scena_node_provider.dart';
+import 'package:provider/provider.dart';
 
 class SceneNodeManager {
   static SceneNodeManager instance = SceneNodeManager._();
@@ -11,19 +14,25 @@ class SceneNodeManager {
     return instance;
   }
 
-  Map<String, ScenaNode> _scensNode = Map<String, ScenaNode>();
-
-  bool addNode(ScenaNode node) {
-    if (_scensNode.containsKey(node.nodeName)) {
-      return false;
+  Map<String, ScenaNodeProvider> _scensNode = Map<String, ScenaNodeProvider>();
+  ScenaNodeProvider? getScenaNode(String name) {
+    if (_scensNode.containsKey(name)) {
+      return _scensNode[name];
     }
-    _scensNode[node._nodeName] = node;
+    return null;
+  }
+
+  bool addNode(ScenaNodeProvider node) {
+    // if (_scensNode.containsKey(node.nodeName)) {
+    //   return false;
+    // }
+    _scensNode[node.nodeName] = node;
     return true;
   }
 
-  bool removeNode(ScenaNode node) {
+  bool removeNode(ScenaNodeProvider node) {
     if (_scensNode.containsKey(node.nodeName)) {
-      _scensNode.remove(node._nodeName);
+      _scensNode.remove(node.nodeName);
       return true;
     }
 
@@ -47,91 +56,168 @@ class SceneNodeManager {
   // }
 }
 
-class GameScena {
+class FlutterGameScena {
   final String name;
   final Widget scena;
-  GameScena({required this.name, required this.scena});
+  FlutterGameScena({required this.name, required this.scena});
+  FlutterGameScena.empty()
+      : name = '',
+        scena = Container();
 }
 
-class ScenaNode extends InheritedWidget {
-  final StreamController<Widget> _streamController = StreamController<Widget>();
-  final Queue<GameScena> _scens = Queue<GameScena>();
-  final Widget child;
-  ScenaNode(this._nodeName, {required this.child}) : super(child: child) {}
+// class ScenaNode extends InheritedWidget with ChangeNotifier {
+//   final StreamController<Widget?> _streamController =
+//       StreamController<Widget?>.broadcast();
+//   final Queue<FlutterGameScena> _scens = Queue<FlutterGameScena>();
+//   FlutterGameScena? get currentScena => _scens.isNotEmpty ? _scens.last : null;
+//   String? get current => _scens.isNotEmpty ? _scens.last.name : null;
+//   final Widget child;
+//   ScenaNode(this._nodeName, {required this.child}) : super(child: child) {
+//     _streamController.onListen = () {
+//       if (_scens.isNotEmpty) _streamController.add(_scens.last.scena);
+//     };
+//   }
 
-  String _nodeName;
-  String get nodeName => _nodeName;
-  void push(String name, Widget scena) {
-    var s = GameScena(name: name, scena: scena);
-    _scens.add(s);
-    _streamController.add(scena);
-  }
+//   String _nodeName;
+//   String get nodeName => _nodeName;
 
-  void pop() {
-    if (_scens.isNotEmpty) {
-      var s = _scens.removeLast();
-      _streamController.add(s.scena);
-    }
-  }
+//   Future<bool> addComponent(Component component, {String? scena}) async {
+//     if (scena == null) {
+//       if (currentScena?.scena is FlameGame) {
+//         var g = (currentScena?.scena as FlameGame);
+//         await g.add(component);
+//         return true;
+//       }
+//     } else {
+//       var f = _scens.firstWhere((element) => element.name == scena,
+//           orElse: (() => FlutterGameScena.empty()));
+//       if (f.name.isNotEmpty) {
+//         if (currentScena?.scena is FlameGame) {
+//           var g = (currentScena?.scena as FlameGame);
+//           await g.add(component);
+//           return true;
+//         }
+//       }
+//     }
+//     return false;
+//   }
 
-  static ScenaNode of(BuildContext context) {
-    final ScenaNode? result =
-        context.dependOnInheritedWidgetOfExactType<ScenaNode>();
-    assert(result != null, 'No ScenaNode found in context');
-    return result!;
-  }
+//   Future<bool> removeComponent(Component component, {String? scena}) async {
+//     if (scena == null) {
+//       if (currentScena?.scena is FlameGame) {
+//         var g = (currentScena?.scena as FlameGame);
+//         g.remove(component);
+//         return true;
+//       }
+//     } else {
+//       var f = _scens.firstWhere((element) => element.name == scena,
+//           orElse: (() => FlutterGameScena.empty()));
+//       if (f.name.isNotEmpty) {
+//         if (currentScena?.scena is FlameGame) {
+//           var g = (currentScena?.scena as FlameGame);
+//           g.remove(component);
+//           return true;
+//         }
+//       }
+//     }
+//     return false;
+//   }
 
-  @override
-  bool updateShouldNotify(ScenaNode old) => false;
-}
+//   ///Push new scena in node
+//   void push(String name, Widget scena) {
+//     var s = FlutterGameScena(name: name, scena: scena);
+//     _scens.add(s);
+//     _streamController.add(scena);
+//   }
 
+//   ///pop scena from node
+//   void pop() {
+//     if (_scens.isNotEmpty) {
+//       var s = _scens.removeLast();
+//       if (_scens.isNotEmpty)
+//         _streamController.add(_scens.last.scena);
+//       else
+//         _streamController.add(null);
+//     }
+//   }
+
+//   static ScenaNode of(BuildContext context) {
+//     final ScenaNode? result =
+//         context.dependOnInheritedWidgetOfExactType<ScenaNode>();
+//     assert(result != null, 'No ScenaNode found in context');
+//     return result!;
+//   }
+
+//   @override
+//   bool updateShouldNotify(ScenaNode old) => false;
+// }
+
+///Это виджет встраивает узел сцены в дерево флаттера
 class ScenaNodeWidget extends StatefulWidget {
   final String name;
-  late final ScenaNode _node;
-  late final Widget child;
-  ScenaNodeWidget({Key? key, required this.name}) : super(key: key) {
-    _node = ScenaNode(
-      name,
-      child: this,
-    );
-
-    child = StreamBuilder<Widget>(
-        stream: _node._streamController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) return snapshot.data!;
-          return Container();
-        });
+  // late final List<Widget> children;
+  final Function(ScenaNodeProvider node)? init;
+  final List<Widget> Function(BuildContext context) build;
+  // final ScenaNode _node;
+  // late final Widget child;
+  ScenaNodeWidget({
+    Key? key,
+    required this.name,
+    List<Widget>? children,
+    this.init,
+    required this.build
+  }) : super(key: key) {
+    
   }
 
+  ///load scena to Node
+  // void load(String name, Widget widget) {
+  //   var s = SceneNodeManager().getScenaNode(this.name);
+  //   s?.push(name, widget);
+  // }
+
   @override
-  State<StatefulWidget> createState() => _ScenaNodeWidgetState();
+  State<StatefulWidget> createState() => _ScenaNodeWidgetState(name);
 }
 
 class _ScenaNodeWidgetState extends State<ScenaNodeWidget> {
+  final String name;
+  // final List<Widget> children;
+  late final ScenaNodeProvider scenaNode;
+  bool isInit = false;
+  _ScenaNodeWidgetState(this.name,) {}
+
   @override
   void dispose() {
-    SceneNodeManager().removeNode(widget._node);
+    SceneNodeManager().removeNode(scenaNode);
+
     // TODO: implement dispose
     super.dispose();
   }
 
   @override
   void initState() {
-    SceneNodeManager().addNode(widget._node);
-    // TODO: implement initState
+    scenaNode = ScenaNodeProvider(widget.name);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget._node;
-    // ScenaNode(
-    //   child: StreamBuilder<Widget>(
-    //       stream: scenNode._streamController.stream,
-    //       builder: (context, snapshot) {
-    //         if (snapshot.hasData) return snapshot.data!;
-    //         return Container();
-    //       }),
-    // );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ScenaNodeProvider>(create: (_) => scenaNode),
+        ],
+        builder: (c, child) {
+          widget.init?.call(scenaNode);
+
+          return StreamBuilder<Widget?>(
+              stream: scenaNode.stream,
+              builder: (context1, snapshot) {
+                if (snapshot.hasData) {
+                  return Stack(children: [snapshot.data!, ...widget.build(context1)]);
+                }
+                return Container();
+              });
+        });
   }
 }
