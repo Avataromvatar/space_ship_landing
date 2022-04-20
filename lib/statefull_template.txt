@@ -1,0 +1,15 @@
+import 'package:flutter/material.dart';
+
+class TEMPLATE extends StatefulWidget {
+  TEMPLATE({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _TEMPLATEState();
+}
+
+class _TEMPLATEState extends State<TEMPLATE> {
+  @override
+  Widget build(BuildContext context) {
+    return Text('data');
+  }
+}
