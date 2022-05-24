@@ -1,14 +1,21 @@
 import 'package:flame/game.dart';
+import 'package:flame/palette.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
+import 'package:space_ship_landing/sprites/rocket.dart';
 
-class MainGame extends FlameGame {
+class MainGame extends FlameGame with HasDraggables  {
   final String name;
   final paralaxImage = [
     ParallaxImageData('background/фон.png'),
     ParallaxImageData('background/звезды.png'),
   ];
   late final SpriteComponent earth;
+
+  late final Rocket rocket;
+  late final JoystickComponent joystick;
+
   Vector2 speedEarth = Vector2(0.5, 0);
   MainGame({this.name = 'MainScena'}) {}
   @override
@@ -29,6 +36,18 @@ class MainGame extends FlameGame {
     p.x = size.x * 0.5;
     p.y = size.y * 0.5;
     earth.setOpacity(1);
+
+    final knobPaint = BasicPalette.blue.withAlpha(200).paint();
+    final backgroundPaint = BasicPalette.blue.withAlpha(100).paint();
+    joystick = JoystickComponent(
+      knob: CircleComponent(radius: 30, paint: knobPaint),
+      background: CircleComponent(radius: 100, paint: backgroundPaint),
+      margin: const EdgeInsets.only(left: 40, bottom: 40),
+    );
+    rocket = Rocket(joystick);
+
+    add(rocket);
+    add(joystick);
 
     return super.onLoad();
   }
