@@ -66,18 +66,14 @@ class EarthGame extends FlameGame {
 
   @override
   void update(double dt) {
-    // terrain[0].position = terrain[0].position - Vector2(100 * dt, 0);
-    // if (terrain[0].position.x.abs() > terrain[0].width) {
-    //   terrain[0].position = terrain[0].position + Vector2(terrain[0].width, 0);
-    // }
-    for (var i = 0; i < terrain.length; i++) {
-      terrain[i].position = terrain[i].position - Vector2(400 * dt, 0);
+    // for (var i = 0; i < terrain.length; i++) {
+    //   terrain[i].position = terrain[i].position - Vector2(400 * dt, 0);
 
-      if (terrain[i].position.x < terrain[i].width * -1) {
-        terrain[i].position =
-            terrain[i].position + Vector2(terrain[0].width * 2, 0);
-      }
-    }
+    //   if (terrain[i].position.x < terrain[i].width * -1) {
+    //     terrain[i].position =
+    //         terrain[i].position + Vector2(terrain[0].width * 2, 0);
+    //   }
+    // }
 
     super.update(dt);
   }
