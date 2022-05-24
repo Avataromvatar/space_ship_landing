@@ -3,11 +3,12 @@ import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-class PlatformComponent extends SpriteComponent with CollisionCallbacks {
+class PlatformComponent extends SpriteComponent /*with CollisionCallbacks*/ {
   PlatformComponent();
   late RectangleHitbox hitBox;
   @override
   void onCollision(Set<Vector2> points, PositionComponent other) {
+    print('onCollision');
     if (other is RectangleHitbox) {
       //...
     }
@@ -18,6 +19,7 @@ class PlatformComponent extends SpriteComponent with CollisionCallbacks {
 
   @override
   void onCollisionEnd(PositionComponent other) {
+    print('onCollisionEnd');
     if (other is ScreenHitbox) {
       //...
     }
