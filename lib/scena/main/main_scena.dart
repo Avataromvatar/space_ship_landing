@@ -1,10 +1,13 @@
 import 'package:flame/game.dart';
+import 'package:flame/palette.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
+import 'package:space_ship_landing/sprites/rocket.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:space_ship_landing/components/platform/paltform.dart';
 
-class MainGame extends Forge2DGame {
+class MainGame extends Forge2DGame with HasDraggables {
   final String name;
   final paralaxImage = [
     ParallaxImageData('background/фон.png'),
@@ -12,10 +15,12 @@ class MainGame extends Forge2DGame {
   ];
   late final SpriteComponent earth;
   late final SpriteComponent moon;
-
+  late final Rocket rocket;
+  late final JoystickComponent joystick;
   late final PlatformComponent platform;
-  late final Vector2 speedEarth = Vector2(0.5, 0);
+  Vector2 speedEarth = Vector2(1, 0);
   MainGame({this.name = 'MainScena'}) : super(gravity: Vector2(0, 0)) {}
+
   @override
   Future<void>? onLoad() async {
     print('onLoad');
@@ -56,6 +61,18 @@ class MainGame extends Forge2DGame {
         camera.gameSize.y - moon.size.y);
 
     earth.setOpacity(1);
+
+    final knobPaint = BasicPalette.blue.withAlpha(200).paint();
+    final backgroundPaint = BasicPalette.blue.withAlpha(100).paint();
+    joystick = JoystickComponent(
+      knob: CircleComponent(radius: 30, paint: knobPaint),
+      background: CircleComponent(radius: 100, paint: backgroundPaint),
+      margin: const EdgeInsets.only(left: 40, bottom: 40),
+    );
+    rocket = Rocket(joystick);
+
+    add(rocket);
+    add(joystick);
 
     return super.onLoad();
   }
