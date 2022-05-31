@@ -7,7 +7,7 @@ import 'package:space_ship_landing/sprites/rocket.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:space_ship_landing/components/platform/paltform.dart';
 
-class MainGame extends Forge2DGame with HasDraggables {
+class MainGame extends Forge2DGame with HasDraggables, HasCollisionDetection {
   final String name;
   final paralaxImage = [
     ParallaxImageData('background/фон.png'),

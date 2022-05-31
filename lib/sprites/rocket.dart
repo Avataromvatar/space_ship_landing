@@ -2,9 +2,12 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks{
-  double maxSpeed = 300.0;
-  double gravitationYSpeed = 0.0;
+class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks {
+  double maxThrust = 10.0;
+  double mass = 1.0;
+  Vector2 a = Vector2.zero();
+  Vector2 v = Vector2.zero();
+  double gravitationYSpeed = 10.0;
   double gravitationXSpeed = 0.0;
 
   static double rocketWidth = 50.0;
@@ -13,13 +16,16 @@ class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks{
 
   final JoystickComponent joystick;
 
-  Rocket(this.joystick) : super(size: Vector2(rocketWidth, rocketWidth*2.38), anchor: Anchor.center);
+  Rocket(this.joystick)
+      : super(
+            size: Vector2(rocketWidth, rocketWidth * 2.38),
+            anchor: Anchor.center);
 
   @override
   Future<void>? onLoad() async {
     sprite = await gameRef.loadSprite('object/rocket.png');
-    position.x = gameRef.size.x/2;
-    position.y = gameRef.size.y*1/4;
+    position.x = gameRef.size.x / 2;
+    position.y = gameRef.size.y * 1 / 4;
     add(RectangleHitbox()..debugMode = true);
     return super.onLoad();
   }
@@ -29,25 +35,28 @@ class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks{
     if (!joystick.delta.isZero() && activeCollisions.isEmpty) {
       _lastSize.setFrom(size);
       _lastTransform.setFrom(transform);
-      position.add(joystick.relativeDelta * maxSpeed * dt);
-      angle = joystick.delta.screenAngle();
+      a = joystick.relativeDelta * maxThrust / mass;
+      v += a * dt;
+      position.add(v);
+      // position.add(joystick.relativeDelta * maxSpeed * dt);
+      // angle = joystick.delta.screenAngle();
     }
 
     position.y += setGravitationYSpeed(dt);
-    position.x -= gravitationXSpeed*dt;
+    position.x -= gravitationXSpeed * dt;
 
     super.update(dt);
   }
 
   setGravitationYSpeed(double dt) {
-    gravitationYSpeed = (gravitationYSpeed + 1.1 * dt)/10;
+    gravitationYSpeed = (gravitationYSpeed + 1.1 * dt) / 10;
     return gravitationYSpeed;
   }
 
-
-
   @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    print('onCollisionStart');
     transform.setFrom(_lastTransform);
     size.setFrom(_lastSize);
     super.onCollisionStart(intersectionPoints, other);
@@ -55,8 +64,7 @@ class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks{
 
   @override
   void onCollisionEnd(PositionComponent __) {
+    print('onCollisionEnd');
     super.onCollisionEnd(__);
   }
-
-
 }
