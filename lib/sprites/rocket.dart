@@ -1,6 +1,11 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:space_ship_landing/components/provider/flame_provider.dart';
+import 'package:space_ship_landing/scena/main/main_scena.dart';
+
+class TestComp extends Component {}
 
 class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks {
   double maxThrust = 10.0;
@@ -26,7 +31,8 @@ class Rocket extends SpriteComponent with HasGameRef, CollisionCallbacks {
     sprite = await gameRef.loadSprite('object/rocket.png');
     position.x = gameRef.size.x / 2;
     position.y = gameRef.size.y * 1 / 4;
-    add(RectangleHitbox()..debugMode = true);
+    await add(RectangleHitbox()..debugMode = true);
+    await add(TestComp());
     return super.onLoad();
   }
 
