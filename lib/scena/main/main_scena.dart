@@ -3,6 +3,7 @@ import 'package:flame/palette.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:space_ship_landing/components/ship/ship.dart';
 import 'package:space_ship_landing/sprites/rocket.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:space_ship_landing/components/platform/paltform.dart';
@@ -15,7 +16,9 @@ class MainGame extends Forge2DGame with HasDraggables, HasCollisionDetection {
   ];
   late final SpriteComponent earth;
   late final SpriteComponent moon;
-  late final Rocket rocket;
+  late final SpaceShip spaceShip; //
+  late final Rocket rocket; //
+
   late final JoystickComponent joystick;
   late final PlatformComponent platform;
   Vector2 speedEarth = Vector2(1, 0);
@@ -70,9 +73,10 @@ class MainGame extends Forge2DGame with HasDraggables, HasCollisionDetection {
       margin: const EdgeInsets.only(left: 40, bottom: 40),
     );
     rocket = Rocket(joystick);
-
-    add(rocket);
-    add(joystick);
+    spaceShip = SpaceShip();
+    await add(spaceShip);
+    // await add(rocket);
+    await add(joystick);
 
     return super.onLoad();
   }
@@ -92,6 +96,7 @@ class MainGame extends Forge2DGame with HasDraggables, HasCollisionDetection {
   void moveEarth(double dt) {
     speedEarth.rotate(dt * 0.1);
     // speed.rotate(dt * 60);
+    spaceShip.position += speedEarth;
     earth.position += speedEarth;
   }
 }
