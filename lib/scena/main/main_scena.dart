@@ -96,7 +96,7 @@ class MainGame extends Forge2DGame with HasDraggables, HasCollisionDetection {
   void moveEarth(double dt) {
     speedEarth.rotate(dt * 0.1);
     // speed.rotate(dt * 60);
-    spaceShip.position += speedEarth;
+    // spaceShip.position += speedEarth;
     earth.position += speedEarth;
   }
 }
